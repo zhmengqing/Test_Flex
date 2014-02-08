@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
 					   xmlns:s="library://ns.adobe.com/flex/spark" 
-					   xmlns:mx="library://ns.adobe.com/flex/mx" creationComplete="windowedapplication1_creationCompleteHandler(event)">
+					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   width="600" height="400"
+					   creationComplete="windowedapplication1_creationCompleteHandler(event)">
 	<fx:Script>
 		<![CDATA[
 			import com.zhmq.manager.NetStreamManager;
@@ -13,10 +15,11 @@
 			{
 				// TODO Auto-generated method stub
 				var sp:Sprite = new Sprite();
-				var ui:UIComponent = new UIComponent();
 				this.addElement(ui);
 				ui.addChild(sp);
 				NetStreamManager.instance.init(sp);
+				NetStreamManager.instance.setButton(btn);
+				NetStreamManager.instance.setSlider(slider);
 			}
 			
 		]]>
@@ -24,5 +27,10 @@
 	<fx:Declarations>
 		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
 	</fx:Declarations>
+	<s:VGroup width="100%" top="10" left="10" right="10" bottom="10">
+		<mx:UIComponent id="ui" width="100%" height="350"/>
+	</s:VGroup>
+	<s:Button id="btn" label="播放" y="350" width="50"/>
+	<mx:Slider id="slider" width="100%" y="350" x="50"/>
 	
 </s:WindowedApplication>

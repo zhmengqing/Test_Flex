@@ -6,12 +6,16 @@ package com.zhmq.manager
 	import flash.net.NetConnection;
 	import flash.net.NetStream;
 	
-	import mx.core.Container;
+	import mx.controls.sliderClasses.Slider;
+	
+	import spark.components.Button;
 
 	public class NetStreamManager
 	{
 		private var _ns:NetStream;
 		private var _video:Video;
+		private var _btn:Button;
+		private var _slider:Slider;
 		public function NetStreamManager()
 		{
 			var nc:NetConnection=new NetConnection();
@@ -33,7 +37,7 @@ package com.zhmq.manager
 		}
 		public function init(contain:Sprite):void
 		{
-			_video = new Video(400,300);
+			_video = new Video(400,350);
 			_video.smoothing = true;
 			contain.addChild(_video);
 			_ns.client = this;
@@ -41,6 +45,15 @@ package com.zhmq.manager
 			_ns.play("cuepoints.flv"); 
 			_video.attachNetStream(_ns);
 			_ns.addEventListener(NetStatusEvent.NET_STATUS, onNetStatus);
+		}
+		
+		public function setButton(btn:Button):void
+		{
+			_btn = btn;
+		}
+		public function setSlider(slider:Slider):void
+		{
+			_slider = slider;
 		}
 		
 		private static var _instance:NetStreamManager;
