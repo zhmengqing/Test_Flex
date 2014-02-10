@@ -40,24 +40,18 @@ package com.zhmq.manager
 			isPause = !boo;
 		}
 		
-		protected function onNetStatus(event:NetStatusEvent):void
+		protected function onNetStatus(e:NetStatusEvent):void
 		{
 			// TODO Auto-generated method stub
-			_ns.addEventListener(NetStatusEvent.NET_STATUS,netStreamStatusHandler);
 			btnPlay(true);
-		}
-		
-		protected function netStreamStatusHandler(e:NetStatusEvent):void
-		{
-			// TODO Auto-generated method stub
 			if(e.info.code == "NetStream.Play.Stop")
 			{
 				_ns.seek(0);
-				btnPlay(true);
-				isPause = true;
+				btnPlay(false);
 				_ns.pause();
 			}
 		}
+		
 		
 		protected function onClick(event:MouseEvent):void
 		{
@@ -88,10 +82,12 @@ package com.zhmq.manager
 		public function onMetaData(obj:Object):void
 		{
 			_slider.maximum = obj.duration;
+			_video.width = obj.width;
+			_video.height = obj.height;
 		}
 		public function init(contain:Sprite):void
 		{
-			_video = new Video(400,350);
+			_video = new Video();
 			_video.smoothing = true;
 			contain.addChild(_video);
 			_ns.client = this;
