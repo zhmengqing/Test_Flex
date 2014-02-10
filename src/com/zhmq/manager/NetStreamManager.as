@@ -43,12 +43,13 @@ package com.zhmq.manager
 		protected function onNetStatus(e:NetStatusEvent):void
 		{
 			// TODO Auto-generated method stub
-			btnPlay(true);
 			if(e.info.code == "NetStream.Play.Stop")
 			{
 				_ns.seek(0);
 				btnPlay(false);
 				_ns.pause();
+			}else{
+				btnPlay(true);
 			}
 		}
 		
@@ -84,6 +85,11 @@ package com.zhmq.manager
 			_slider.maximum = obj.duration;
 			_video.width = obj.width;
 			_video.height = obj.height;
+			_slider.y = _btn.y =_video.height;
+			 
+			for(var k:String in obj){
+				trace(k+":"+obj[k]);
+			}
 		}
 		public function init(contain:Sprite):void
 		{
@@ -92,7 +98,7 @@ package com.zhmq.manager
 			contain.addChild(_video);
 			_ns.client = this;
 			_ns.receiveVideo(true);
-			_ns.play("cuepoints.flv"); 
+			_ns.play("12345.flv"); 
 			_video.attachNetStream(_ns);
 			_ns.addEventListener(NetStatusEvent.NET_STATUS, onNetStatus);
 		}
