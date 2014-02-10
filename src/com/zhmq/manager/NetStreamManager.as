@@ -1,21 +1,28 @@
 package com.zhmq.manager
 {
 	import flash.display.Sprite;
+	import flash.events.Event;
+	import flash.events.EventDispatcher;
+	import flash.events.MouseEvent;
 	import flash.events.NetStatusEvent;
 	import flash.media.Video;
 	import flash.net.NetConnection;
 	import flash.net.NetStream;
 	
 	import mx.controls.sliderClasses.Slider;
+	import mx.events.SliderEvent;
 	
+	import spark.components.BorderContainer;
 	import spark.components.Button;
 
-	public class NetStreamManager
+	public class NetStreamManager extends EventDispatcher
 	{
 		private var _ns:NetStream;
 		private var _video:Video;
 		private var _btn:Button;
 		private var _slider:Slider;
+		private var isPause:Boolean;
+		private var _rect:BorderContainer;
 		public function NetStreamManager()
 		{
 			var nc:NetConnection=new NetConnection();
@@ -23,10 +30,56 @@ package com.zhmq.manager
 			_ns=new NetStream(nc); 
 		}
 		
+		private function btnPlay(boo:Boolean):void
+		{
+			if(boo){
+				_btn.label = "暂停";
+			}else{
+				_btn.label = "播放";
+			}
+			isPause = !boo;
+		}
+		
 		protected function onNetStatus(event:NetStatusEvent):void
 		{
 			// TODO Auto-generated method stub
+			_ns.addEventListener(NetStatusEvent.NET_STATUS,netStreamStatusHandler);
+			btnPlay(true);
+		}
+		
+		protected function netStreamStatusHandler(e:NetStatusEvent):void
+		{
+			// TODO Auto-generated method stub
+			if(e.info.code == "NetStream.Play.Stop")
+			{
+				_ns.seek(0);
+				btnPlay(true);
+				isPause = true;
+				_ns.pause();
+			}
+		}
+		
+		protected function onClick(event:MouseEvent):void
+		{
+			// TODO Auto-generated method stub
+			btnPlay(isPause);
+			if(isPause){
+				_ns.pause();
+			}else{
+				_ns.resume();
+			}
+		}
+		
+		public function EnterFrameHandler(event:Event):void
+		{
+			// TODO Auto-generated method stub
+			if (_slider.maximum>0){ 
+				_slider.value = _ns.time;
+			}
 			
+			if (_ns.bytesLoaded>0 && _ns.bytesLoaded<_ns.bytesTotal){ 
+				_rect.width = _ns.bytesLoaded / _ns.bytesTotal*(_slider.width-10);
+			}
 		}
 		
 		public function onCuePoint(obj:Object):void
@@ -34,6 +87,7 @@ package com.zhmq.manager
 		}
 		public function onMetaData(obj:Object):void
 		{
+			_slider.maximum = obj.duration;
 		}
 		public function init(contain:Sprite):void
 		{
@@ -50,10 +104,28 @@ package com.zhmq.manager
 		public function setButton(btn:Button):void
 		{
 			_btn = btn;
+			_btn.addEventListener(MouseEvent.CLICK, onClick);
 		}
+		
 		public function setSlider(slider:Slider):void
 		{
 			_slider = slider;
+			_rect = new BorderContainer();
+			_slider.parentApplication.addElement(_rect);
+			_rect.x = _slider.x;
+			_rect.y = _slider.y;
+			_rect.width = 0;
+			_rect.height = 4;
+		}
+		
+		public function onChange(e:SliderEvent):void
+		{
+			if(_ns.time == 0)
+			{ 
+				_slider.value = 0; 
+				return; 
+			} 
+			_ns.seek(_slider.value);
 		}
 		
 		private static var _instance:NetStreamManager;
